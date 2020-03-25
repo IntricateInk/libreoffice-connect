@@ -3,11 +3,24 @@ plugins {
     id 'java-library'
 }
 
+import org.gradle.internal.os.OperatingSystem
+
+ext {
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.LINUX:
+            libreOfficePath = '/usr/lib/libreoffice/program'
+            break;
+        case OperatingSystem.WINDOWS:
+            libreOfficePath = 'C:/Program Files/LibreOffice/program/'
+            break;
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation fileTree('C:/Program Files/LibreOffice/program/')
+    implementation fileTree("${libreOfficePath}")
     testImplementation 'junit:junit:4.12'
 }
