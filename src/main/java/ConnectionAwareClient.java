@@ -4,14 +4,24 @@ import java.awt.*;
 import java.awt.event.*;
 
 import com.sun.star.uno.XComponentContext;
+import com.sun.star.util.XModifyBroadcaster;
+import com.sun.star.util.XModifyListener;
 import com.sun.star.lang.XMultiComponentFactory;
+import com.sun.star.sheet.XSpreadsheet;
+import com.sun.star.sheet.XSpreadsheetDocument;
+import com.sun.star.sheet.XSpreadsheets;
+import com.sun.star.table.XCellRange;
 import com.sun.star.frame.XComponentLoader;
+import com.sun.star.frame.XDesktop;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.connection.XConnector;
+import com.sun.star.container.XIndexAccess;
 import com.sun.star.connection.XConnection;
 
 import com.sun.star.beans.XPropertySet;
-
+import com.sun.star.lang.EventObject;
+import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 
 import com.sun.star.bridge.XBridgeFactory;
@@ -68,6 +78,8 @@ public class ConnectionAwareClient extends java.awt.Frame
 
     public void actionPerformed( ActionEvent event )
     {
+    	XComponent component = null;
+
         try
         {
             String sUrl;
@@ -79,7 +91,7 @@ public class ConnectionAwareClient extends java.awt.Frame
             {
                 sUrl = "private:factory/scalc";
             }
-            getComponentLoader().loadComponentFromURL(
+            component = getComponentLoader().loadComponentFromURL(
                 sUrl, "_blank", 0,new com.sun.star.beans.PropertyValue[0] );
             _txtLabel.setText( "connected" );
         }
@@ -92,6 +104,42 @@ public class ConnectionAwareClient extends java.awt.Frame
             _txtLabel.setText( exc.getMessage() );
             throw new java.lang.RuntimeException( exc );
         }
+		
+        System.out.println(component);
+		XSpreadsheetDocument sheetDoc = UnoRuntime.queryInterface(XSpreadsheetDocument.class, component);
+        System.out.println(sheetDoc);
+        
+        XSpreadsheets sheets = UnoRuntime.queryInterface(XSpreadsheets.class, sheetDoc.getSheets());
+        System.out.println(sheets);
+        
+        XIndexAccess ia = UnoRuntime.queryInterface(XIndexAccess.class, sheets);
+        XSpreadsheet sheet = null;
+		try {
+			sheet = UnoRuntime.queryInterface(XSpreadsheet.class, ia.getByIndex(0));
+		} catch (IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WrappedTargetException e) {
+			return;
+		}
+
+        XModifyBroadcaster cells = UnoRuntime.queryInterface(XModifyBroadcaster.class, sheet);
+
+        XModifyListener modifyListener = new XModifyListener() {
+			
+			@Override
+			public void disposing(EventObject arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void modified(EventObject arg0) {
+				
+				System.out.println(arg0);
+			}
+		};
+        cells.addModifyListener(modifyListener);
     }
 
     /** separates the uno-url into 3 different parts.
