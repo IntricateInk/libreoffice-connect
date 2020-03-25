@@ -3,6 +3,7 @@
 import java.awt.*;
 import java.awt.event.*;
 
+import com.sun.star.table.CellAddress;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XModifyBroadcaster;
 import com.sun.star.util.XModifyListener;
@@ -26,6 +27,9 @@ import com.sun.star.lang.XComponent;
 
 import com.sun.star.bridge.XBridgeFactory;
 import com.sun.star.bridge.XBridge;
+import utils.Calc;
+import utils.Info;
+import utils.Lo;
 
 
 public class ConnectionAwareClient extends java.awt.Frame
@@ -128,15 +132,19 @@ public class ConnectionAwareClient extends java.awt.Frame
         XModifyListener modifyListener = new XModifyListener() {
 			
 			@Override
-			public void disposing(EventObject arg0) {
+			public void disposing(EventObject event) {
 				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
-			public void modified(EventObject arg0) {
-				
-				System.out.println(arg0);
+			public void modified(EventObject event) {
+                System.out.println("Modified: " + event.Source);
+                Info.showServices("Event source", event.Source);
+                CellAddress addr = Calc.getSelectedCellAddr(sheetDoc);
+                System.out.println("  " + Calc.getCellStr(addr));
+                // TODO: Sheet is not (effectively) final
+                // System.out.println("  " + Calc.getCellStr(addr) + " = " + Calc.getVal(sheet, addr));
 			}
 		};
         cells.addModifyListener(modifyListener);
