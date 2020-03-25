@@ -17,4 +17,3 @@ LibreOffice 6.2.
 
 The utilities are in the `utils` package, and are included as source code instead of a JAR, although we would prefer it
 to be published to Maven eventually.
-
