@@ -1,8 +1,8 @@
 # Setup
 
-1. Install libreoffice (https://www.libreoffice.org/download/download/)
-2. Mess around with `build.gradle` to set appropriate dependency against libreoffice
-3. Run
+1. Install LibreOffice (https://www.libreoffice.org/download/download/)
+2. Run `soffice --accept=socket,host=localhost,port=2002;urp;`
+3. Run `./gradlew build`
 
 # Misc
 
