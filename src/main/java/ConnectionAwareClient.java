@@ -35,7 +35,6 @@ import utils.Lo;
 public class ConnectionAwareClient extends java.awt.Frame
     implements ActionListener , com.sun.star.lang.XEventListener
 {
-    private final Button _btnWriter;
     private final Label _txtLabel;
     private final String _url;
 
@@ -49,13 +48,10 @@ public class ConnectionAwareClient extends java.awt.Frame
         _ctx = ctx;
 
         Panel p1 = new Panel();
-        _btnWriter = new Button("New writer");
         Button _btnCalc = new Button("New calc");
         _txtLabel = new Label( "disconnected" );
 
-        _btnWriter.addActionListener(this);
         _btnCalc.addActionListener(this);
-        p1.add( _btnWriter );
         p1.add( _btnCalc );
         p1.add( _txtLabel );
 
@@ -86,17 +82,8 @@ public class ConnectionAwareClient extends java.awt.Frame
 
         try
         {
-            String sUrl;
-            if( event.getSource() == _btnWriter )
-            {
-                sUrl = "private:factory/swriter";
-            }
-            else
-            {
-                sUrl = "private:factory/scalc";
-            }
-            component = getComponentLoader().loadComponentFromURL(
-                sUrl, "_blank", 0,new com.sun.star.beans.PropertyValue[0] );
+            component = getComponentLoader()
+            		.loadComponentFromURL("private:factory/scalc", "_blank", 0,new com.sun.star.beans.PropertyValue[0] );
             _txtLabel.setText( "connected" );
         }
         catch ( com.sun.star.connection.NoConnectException exc )
@@ -108,15 +95,11 @@ public class ConnectionAwareClient extends java.awt.Frame
             _txtLabel.setText( exc.getMessage() );
             throw new java.lang.RuntimeException( exc );
         }
-		
-        System.out.println(component);
+
 		XSpreadsheetDocument sheetDoc = UnoRuntime.queryInterface(XSpreadsheetDocument.class, component);
-        System.out.println(sheetDoc);
-        
         XSpreadsheets sheets = UnoRuntime.queryInterface(XSpreadsheets.class, sheetDoc.getSheets());
-        System.out.println(sheets);
-        
         XIndexAccess ia = UnoRuntime.queryInterface(XIndexAccess.class, sheets);
+
         XSpreadsheet sheet = null;
 		try {
 			sheet = UnoRuntime.queryInterface(XSpreadsheet.class, ia.getByIndex(0));
@@ -133,7 +116,6 @@ public class ConnectionAwareClient extends java.awt.Frame
 			@Override
 			public void disposing(EventObject event) {
 				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
@@ -153,7 +135,7 @@ public class ConnectionAwareClient extends java.awt.Frame
                 	}
                 	System.out.println();
                 }
-                
+
                 Calc.printAddress(addr);
                 Calc.printAddress(Calc.findUsedRange(sheet2));
 			}
