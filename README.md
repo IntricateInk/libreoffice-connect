@@ -16,6 +16,7 @@ Use `soffice.exe --accept=socket,host=localhost,port=2002;urp;`
 # Useful References
 
 Samples taken from https://api.libreoffice.org/examples/DevelopersGuide/examples.html
+
 Official Documentation: https://api.libreoffice.org/docs/idl/ref/
 
 # Acknowledgements
