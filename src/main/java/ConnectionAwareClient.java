@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 import com.sun.star.table.CellAddress;
+import com.sun.star.table.CellRangeAddress;
+import com.sun.star.table.XCellRange;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XModifyBroadcaster;
 import com.sun.star.util.XModifyListener;
@@ -126,7 +128,6 @@ public class ConnectionAwareClient extends java.awt.Frame
 		}
 
         XModifyBroadcaster cells = UnoRuntime.queryInterface(XModifyBroadcaster.class, sheet);
-
         XModifyListener modifyListener = new XModifyListener() {
 			
 			@Override
@@ -137,12 +138,24 @@ public class ConnectionAwareClient extends java.awt.Frame
 			
 			@Override
 			public void modified(EventObject event) {
-                System.out.println("Modified: " + event.Source);
-                Info.showServices("Event source", event.Source);
-                CellAddress addr = Calc.getSelectedCellAddr(sheetDoc);
-                System.out.println("  " + Calc.getCellStr(addr));
-                // TODO: Sheet is not (effectively) final
-                // System.out.println("  " + Calc.getCellStr(addr) + " = " + Calc.getVal(sheet, addr));
+				XSpreadsheet sheet2 = Lo.qi(XSpreadsheet.class, event.Source);
+                CellRangeAddress addr = Calc.getSelectedAddr(sheetDoc);
+
+                // pretty prints
+                System.out.println("  " + Calc.getRangeStr(addr));
+                System.out.println(addr.StartRow + ", " + addr.EndRow);
+                System.out.println(addr.StartColumn + ", " + addr.EndColumn);
+                for (int x = addr.StartRow; x <= addr.EndRow; x++) {
+            		System.out.print(" | ");
+                	for (int y = addr.StartColumn; y <= addr.EndColumn; y++) {
+                		System.out.print(Calc.getString(sheet2, y, x));
+                		System.out.print(" | ");
+                	}
+                	System.out.println();
+                }
+                
+                Calc.printAddress(addr);
+                Calc.printAddress(Calc.findUsedRange(sheet2));
 			}
 		};
         cells.addModifyListener(modifyListener);
