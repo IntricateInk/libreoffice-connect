@@ -22,5 +22,8 @@ repositories {
 
 dependencies {
     implementation fileTree("${libreOfficePath}")
+    implementation 'javax.mail:mail:1.4'
+    implementation 'net.java.dev.jna:jna:4.1.0'
+    implementation 'net.java.dev.jna:jna-platform:4.1.0'
     testImplementation 'junit:junit:4.12'
 }
